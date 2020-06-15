@@ -1,0 +1,12 @@
+INSERT INTO clients (names, last_name, email, birth_date, create_at) VALUES('Andrés', 'Guzmán', 'profesor@bolsadeideas.com', '1992-06-02', '2020-06-15');
+INSERT INTO clients (names, last_name, email, birth_date, create_at) VALUES('Mr. John', 'Doe', 'john.doe@gmail.com', '1992-06-02', '2020-06-15');
+INSERT INTO clients (names, last_name, email, birth_date, create_at) VALUES('Linus', 'Torvalds', 'linus.torvalds@gmail.com', '1992-06-02', '2020-06-15');
+INSERT INTO clients (names, last_name, email, birth_date, create_at) VALUES('Rasmus', 'Lerdorf', 'rasmus.lerdorf@gmail.com', '1992-06-02', '2020-06-15');
+INSERT INTO clients (names, last_name, email, birth_date, create_at) VALUES('Erich', 'Gamma', 'erich.gamma@gmail.com', '1992-06-02', '2020-06-15');
+INSERT INTO clients (names, last_name, email, birth_date, create_at) VALUES('Richard', 'Helm', 'richard.helm@gmail.com', '1992-06-02', '2020-06-15');
+INSERT INTO clients (names, last_name, email, birth_date, create_at) VALUES('Ralph', 'Johnson', 'ralph.johnson@gmail.com', '1992-06-02', '2020-06-15');
+INSERT INTO clients (names, last_name, email, birth_date, create_at) VALUES('John', 'Vlissides', 'john.vlissides@gmail.com', '1992-06-02', '2020-06-15');
+INSERT INTO clients (names, last_name, email, birth_date, create_at) VALUES('Dr. James', 'Gosling', 'james.gosling@gmail.com', '1992-06-02', '2020-06-15');
+INSERT INTO clients (names, last_name, email, birth_date, create_at) VALUES('Magma', 'Lee', 'magma.lee@gmail.com', '1992-06-02', '2020-06-15');
+INSERT INTO clients (names, last_name, email, birth_date, create_at) VALUES('Tornado', 'Roe', 'tornado.roe@gmail.com', '1992-06-02', '2020-06-15');
+INSERT INTO clients (names, last_name, email, birth_date, create_at) VALUES('Jade', 'Doe', 'jane.doe@gmail.com', '1992-06-02', '2020-06-15');

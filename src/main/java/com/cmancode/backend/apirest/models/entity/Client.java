@@ -1,4 +1,4 @@
-package com.cmancode.backend.apirest.model.entity;
+package com.cmancode.backend.apirest.models.entity;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -39,6 +39,11 @@ public class Client implements Serializable {
 	@Column(name="email", length = 60, nullable = false)
 	@Getter @Setter
 	private String email;
+	
+	@Temporal(TemporalType.DATE)
+	@Column(name="birth_date", nullable = false)
+	@Getter @Setter
+	private Date birthDate;
 	
 	@Column(name="create_at", nullable = false)
 	@Getter @Setter
