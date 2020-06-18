@@ -1,8 +1,11 @@
 package com.cmancode.backend.apirest.controllers;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -35,16 +38,27 @@ public class ClienteRestController {
 	public ResponseEntity<List<Client>> clients() {
 		List<Client> clients = null;
 		clients = this.clienteService.findClients();
-		if(clients.isEmpty()) {
-			return new ResponseEntity<List<Client>>(HttpStatus.FOUND);
-		}
 		return new ResponseEntity<List<Client>>(clients, HttpStatus.OK);
 	}
 
 	@GetMapping("/client/{id}")
-	public ResponseEntity<Client> findClientById(@PathVariable("id") Long id) {
+	public ResponseEntity<?> findClientById(@PathVariable("id") Long id) {
 		Client client = null;
-		client = this.clienteService.findByIdClient(id);
+		Map<String, Object> mensaje = new HashMap<>();
+		
+		try {
+			client = this.clienteService.findByIdClient(id);
+		} catch (DataAccessException e) {
+			mensaje.put("Error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<Map<String, Object>>(mensaje, HttpStatus.NOT_ACCEPTABLE);
+		}
+		
+		if(client == null) {
+			mensaje.put("mensaje", "No existen registros con base al criterio ingresado.");
+			return new ResponseEntity<Map<String, Object>>(mensaje, HttpStatus.NOT_FOUND);
+		}
+		
+		
 		return new ResponseEntity<Client>(client, HttpStatus.OK);
 	}
 	
@@ -60,8 +74,8 @@ public class ClienteRestController {
 		Client clientFinded = null;
 		clientFinded = this.clienteService.findByIdClient(id);
 		
-		clientFinded.setNames(client.getNames());
-		clientFinded.setLastName(client.getLastName());
+		clientFinded.setNames(client.getNames().toUpperCase());
+		clientFinded.setLastName(client.getLastName().toUpperCase());
 		clientFinded.setEmail(client.getEmail());
 		clientFinded.setBirthDate(client.getBirthDate());
 		this.clienteService.update(clientFinded);
