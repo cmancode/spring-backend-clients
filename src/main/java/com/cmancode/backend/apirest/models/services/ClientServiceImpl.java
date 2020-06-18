@@ -22,4 +22,25 @@ public class ClientServiceImpl implements IClientService {
 		return (List<Client>) this.clienteDao.findAll();
 	}
 
+	@Override
+	@Transactional
+	public Client save(Client client) {
+		// TODO Auto-generated method stub
+		return this.clienteDao.save(client);
+	}
+
+	@Override
+	@Transactional
+	public Client update(Client client) {
+		// TODO Auto-generated method stub
+		return this.clienteDao.save(client);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public Client findByIdClient(Long id) {
+		// TODO Auto-generated method stub
+		return this.clienteDao.findById(id).orElse(null);
+	}
+
 }
