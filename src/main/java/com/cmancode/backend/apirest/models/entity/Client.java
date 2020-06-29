@@ -12,6 +12,10 @@ import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+
+import org.springframework.format.annotation.DateTimeFormat;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -31,17 +35,21 @@ public class Client implements Serializable {
 	
 	@Column(name="names", length = 60, nullable = false)
 	@Getter @Setter
+	@NotEmpty
 	private String names;
 	
 	@Column(name="last_name", length = 50, nullable = false)
 	@Getter @Setter
+	@NotEmpty
 	private String lastName;
 	
-	@Column(name="email", length = 60, nullable = false)
+	@Column(name="email", length = 60, nullable = false, unique = false)
 	@Getter @Setter
+	@Email @NotEmpty
 	private String email;
 	
 	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	@Column(name="birth_date", nullable = false)
 	@Getter @Setter
 	private Date birthDate;
