@@ -44,8 +44,8 @@ public class Client implements Serializable {
 	private String lastName;
 	
 	@Column(name="email", length = 60, nullable = false, unique = false)
-	@Getter @Setter
 	@Email @NotEmpty
+	@Getter @Setter
 	private String email;
 	
 	@Temporal(TemporalType.DATE)
@@ -55,9 +55,13 @@ public class Client implements Serializable {
 	private Date birthDate;
 	
 	@Column(name="create_at", nullable = false)
-	@Getter @Setter
 	@Temporal(TemporalType.DATE)
+	@Getter @Setter
 	private Date createAt;
+	
+	@Column(name = "file", nullable = true, length = 100)
+	@Getter @Setter
+	private String file;
 	
 	@PrePersist
 	private void prePersist() {

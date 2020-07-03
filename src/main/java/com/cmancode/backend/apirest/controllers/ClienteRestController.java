@@ -1,18 +1,26 @@
 package com.cmancode.backend.apirest.controllers;
 
+import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.ResponseEntity.HeadersBuilder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,10 +29,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.function.ServerRequest.Headers;
 
 import com.cmancode.backend.apirest.models.entity.Client;
 import com.cmancode.backend.apirest.models.services.IClientService;
+import com.cmancode.backend.apirest.models.services.IUploadFile;
 import com.cmancode.backend.apirest.util.Util;
 
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +51,8 @@ public class ClienteRestController {
 	private IClientService clienteService;
 	@Autowired 
 	private Util util;
+	@Autowired
+	private IUploadFile uploadFile;
 	
 	@GetMapping("/clients")
 	public ResponseEntity<List<Client>> clients() {
@@ -124,6 +138,63 @@ public class ClienteRestController {
 		response.put("cliente", clientFinded);
 		
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
+	}
+	
+	@PostMapping("/clients/upload")
+	public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("id") Long id) {
+		
+		String fileName = UUID.randomUUID().toString()+"_"+file.getOriginalFilename().replace(" ", "_");
+		Map<String, Object> response = new HashMap<>();
+		Client client = null;
+		client = this.clienteService.findByIdClient(id);
+		
+		if(client == null) {
+			response.put("mensaje", "El cliente con 'id' ingresado NO exite en la base de datos");
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+		}
+		
+		if(file.isEmpty()) {
+			response.put("mensaje", "No se encontró ningún archivo en el registro relacionado.");
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+		}
+		
+		if(client.getFile()!=null && client.getFile().length() > 0) {
+			log.info("Resultado de eliminación: "+this.uploadFile.deleteFile(client.getFile()));
+			log.info("Nombre del archivo: "+client.getFile());
+		}
+		
+		if(!this.uploadFile.uploadFile(file, fileName)) {
+			response.put("mensaje", "No es posible realizar la inserción del archivo en la base de datos.");
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+		client.setFile(fileName);
+		this.clienteService.update(client);
+		response.put("mensaje", "Archivo cargado exitósamente.");
+		response.put("cliente", client);
+		
+		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
+	}
+	
+	@GetMapping("/upload/img/{fileName:.+}")
+	public ResponseEntity<Resource> searchFile(@PathVariable("fileName") String fileName) {
+		log.info("Foto: "+fileName);		
+		Path pathFile = Paths.get("files").resolve(fileName).toAbsolutePath();
+		Resource resource = null;
+		
+		try {
+			resource = new UrlResource(pathFile.toUri());
+		} catch (MalformedURLException e) {
+			e.getCause();
+		}
+		
+		if(!resource.exists() && !resource.isReadable()) {
+			throw new RuntimeException("No es posible cargar la imagen: "+ fileName);
+		}
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"");
+		return new ResponseEntity<Resource>(resource, headers, HttpStatus.OK);
 	}
 	
 }
